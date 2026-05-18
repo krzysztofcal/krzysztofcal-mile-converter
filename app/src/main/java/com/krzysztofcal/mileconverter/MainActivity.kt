@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -32,7 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import java.text.DecimalFormat
@@ -59,6 +60,7 @@ private enum class Screen(val title: String) {
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 private fun MileConverterApp() {
     var selectedScreenName by rememberSaveable { mutableStateOf(Screen.Converter.name) }
     val selectedScreen = remember(selectedScreenName) { Screen.valueOf(selectedScreenName) }

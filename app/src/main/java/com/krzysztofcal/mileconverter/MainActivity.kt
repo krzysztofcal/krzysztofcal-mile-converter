@@ -7,11 +7,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,8 +33,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
@@ -98,6 +104,7 @@ private fun ConverterScreen() {
     var inputValue by rememberSaveable { mutableStateOf("") }
     var inputUnitName by rememberSaveable { mutableStateOf(DistanceUnit.Miles.name) }
     val inputUnit = remember(inputUnitName) { DistanceUnit.valueOf(inputUnitName) }
+    val isInvalidInput = inputValue.isNotEmpty() && inputValue.replace(',', '.').toDoubleOrNull() == null
     val parsedValue = inputValue.replace(',', '.').toDoubleOrNull()
     val conversions = remember(parsedValue, inputUnit) {
         parsedValue?.let { DistanceConverter.convertAll(it, inputUnit) }.orEmpty()
@@ -114,14 +121,29 @@ private fun ConverterScreen() {
             style = MaterialTheme.typography.bodyLarge,
         )
 
-        OutlinedTextField(
-            value = inputValue,
-            onValueChange = { inputValue = it },
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Value") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-        )
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OutlinedTextField(
+                value = inputValue,
+                onValueChange = { inputValue = it },
+                modifier = Modifier.weight(1f),
+                label = { Text("Value") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                isError = isInvalidInput,
+                supportingText = if (isInvalidInput) {
+                    { Text("Invalid number") }
+                } else {
+                    null
+                },
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            OutlinedButton(onClick = { inputValue = "" }) {
+                Text("Clear")
+            }
+        }
 
         Text(
             text = "Input unit",
@@ -154,7 +176,7 @@ private fun ConverterScreen() {
 
         if (parsedValue == null) {
             Text(
-                text = "Enter a valid number to see conversions.",
+                text = if (isInvalidInput) "" else "Enter a valid number to see conversions.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -180,17 +202,26 @@ private fun ConverterScreen() {
 
 @Composable
 private fun ConversionRow(label: String, value: String) {
-    Column {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.SemiBold,
-        )
+    val clipboardManager = LocalClipboardManager.current
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+        TextButton(onClick = { clipboardManager.setText(AnnotatedString(value)) }) {
+            Text("Copy")
+        }
     }
 }
 

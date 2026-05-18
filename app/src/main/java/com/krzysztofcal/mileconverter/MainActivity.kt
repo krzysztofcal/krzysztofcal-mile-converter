@@ -104,8 +104,9 @@ private fun ConverterScreen() {
     var inputValue by rememberSaveable { mutableStateOf("") }
     var inputUnitName by rememberSaveable { mutableStateOf(DistanceUnit.Miles.name) }
     val inputUnit = remember(inputUnitName) { DistanceUnit.valueOf(inputUnitName) }
-    val isInvalidInput = inputValue.isNotEmpty() && inputValue.replace(',', '.').toDoubleOrNull() == null
-    val parsedValue = inputValue.replace(',', '.').toDoubleOrNull()
+    val normalizedInput = inputValue.replace(',', '.')
+    val isInvalidInput = inputValue.isNotEmpty() && normalizedInput.toDoubleOrNull() == null
+    val parsedValue = normalizedInput.toDoubleOrNull()
     val conversions = remember(parsedValue, inputUnit) {
         parsedValue?.let { DistanceConverter.convertAll(it, inputUnit) }.orEmpty()
     }

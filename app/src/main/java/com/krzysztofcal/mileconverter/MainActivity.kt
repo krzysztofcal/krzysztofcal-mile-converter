@@ -175,8 +175,8 @@ private fun ConverterScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     DistanceUnit.entries.forEach { unit ->
                         ConversionRow(
@@ -194,30 +194,6 @@ private fun ConverterScreen(
                 onValueClick = onRecentValueClick,
                 onClear = onClearRecentValues,
             )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OutlinedTextField(
-                value = inputValue,
-                onValueChange = onInputValueChange,
-                modifier = Modifier.weight(1f),
-                label = { Text(stringResource(R.string.value_label)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                isError = isInvalidInput,
-                supportingText = if (isInvalidInput) {
-                    { Text(stringResource(R.string.invalid_number)) }
-                } else {
-                    null
-                },
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            OutlinedButton(onClick = { onInputValueChange("") }) {
-                Text(stringResource(R.string.clear))
-            }
         }
 
         Row(
@@ -253,6 +229,30 @@ private fun ConverterScreen(
                 }
             }
         }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OutlinedTextField(
+                value = inputValue,
+                onValueChange = onInputValueChange,
+                modifier = Modifier.weight(1f),
+                label = { Text(stringResource(R.string.value_label)) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                isError = isInvalidInput,
+                supportingText = if (isInvalidInput) {
+                    { Text(stringResource(R.string.invalid_number)) }
+                } else {
+                    null
+                },
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            OutlinedButton(onClick = { onInputValueChange("") }) {
+                Text(stringResource(R.string.clear))
+            }
+        }
     }
 }
 
@@ -266,8 +266,8 @@ private fun RecentValuesSection(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -276,12 +276,12 @@ private fun RecentValuesSection(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = stringResource(R.string.last_used_values),
-                        style = MaterialTheme.typography.labelLarge,
+                        style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
                         text = stringResource(R.string.tap_to_restore),
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
@@ -292,7 +292,7 @@ private fun RecentValuesSection(
 
             Row(
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 values.forEach { value ->
                     AssistChip(
@@ -351,12 +351,12 @@ private fun ConversionRow(label: String, value: String) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelLarge,
+                style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 text = value,
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
             )
         }

@@ -1,5 +1,6 @@
 package com.krzysztofcal.mileconverter
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,8 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -30,12 +34,15 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -44,9 +51,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
+
+private const val RECENTS_PREFS_NAME = "mile_converter_recents"
+private const val RECENTS_KEY = "recent_values"
+private const val MAX_RECENT_VALUES = 5
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,10 +81,26 @@ private enum class Screen(val title: String) {
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 private fun MileConverterApp() {
+    val context = LocalContext.current.applicationContext
+    val recentValuesStore = remember(context) { RecentValuesStore(context) }
     var selectedScreenName by rememberSaveable { mutableStateOf(Screen.Converter.name) }
     val selectedScreen = remember(selectedScreenName) { Screen.valueOf(selectedScreenName) }
+    var inputValue by rememberSaveable { mutableStateOf("") }
+    var inputUnitName by rememberSaveable { mutableStateOf(DistanceUnit.Miles.name) }
+    var recentValues by rememberSaveable { mutableStateOf(recentValuesStore.loadRecentValues()) }
+
+    LaunchedEffect(recentValuesStore) {
+        snapshotFlow { inputValue }
+            .debounce(700)
+            .collect { currentValue ->
+                val normalizedValue = currentValue.replace(',', '.').trim()
+                if (normalizedValue.toDoubleOrNull() != null) {
+                    recentValues = recentValuesStore.rememberValue(normalizedValue)
+                }
+            }
+    }
 
     Scaffold(
         topBar = {
@@ -94,7 +123,17 @@ private fun MileConverterApp() {
             }
 
             when (selectedScreen) {
-                Screen.Converter -> ConverterScreen()
+                Screen.Converter -> ConverterScreen(
+                    inputValue = inputValue,
+                    onInputValueChange = { inputValue = it },
+                    inputUnitName = inputUnitName,
+                    onInputUnitNameChange = { inputUnitName = it },
+                    recentValues = recentValues,
+                    onRecentValueClick = { inputValue = it },
+                    onClearRecentValues = {
+                        recentValues = recentValuesStore.clearRecentValues()
+                    },
+                )
                 Screen.About -> AboutScreen()
             }
         }
@@ -102,9 +141,15 @@ private fun MileConverterApp() {
 }
 
 @Composable
-private fun ConverterScreen() {
-    var inputValue by rememberSaveable { mutableStateOf("") }
-    var inputUnitName by rememberSaveable { mutableStateOf(DistanceUnit.Miles.name) }
+private fun ConverterScreen(
+    inputValue: String,
+    onInputValueChange: (String) -> Unit,
+    inputUnitName: String,
+    onInputUnitNameChange: (String) -> Unit,
+    recentValues: List<String>,
+    onRecentValueClick: (String) -> Unit,
+    onClearRecentValues: () -> Unit,
+) {
     val inputUnit = remember(inputUnitName) { DistanceUnit.valueOf(inputUnitName) }
     val normalizedInput = inputValue.replace(',', '.')
     val isInvalidInput = inputValue.isNotEmpty() && normalizedInput.toDoubleOrNull() == null
@@ -143,13 +188,21 @@ private fun ConverterScreen() {
             }
         }
 
+        if (recentValues.isNotEmpty()) {
+            RecentValuesSection(
+                values = recentValues,
+                onValueClick = onRecentValueClick,
+                onClear = onClearRecentValues,
+            )
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             OutlinedTextField(
                 value = inputValue,
-                onValueChange = { inputValue = it },
+                onValueChange = onInputValueChange,
                 modifier = Modifier.weight(1f),
                 label = { Text(stringResource(R.string.value_label)) },
                 singleLine = true,
@@ -162,7 +215,7 @@ private fun ConverterScreen() {
                 },
             )
             Spacer(modifier = Modifier.width(8.dp))
-            OutlinedButton(onClick = { inputValue = "" }) {
+            OutlinedButton(onClick = { onInputValueChange("") }) {
                 Text(stringResource(R.string.clear))
             }
         }
@@ -175,7 +228,7 @@ private fun ConverterScreen() {
                 val selected = unit == inputUnit
                 if (selected) {
                     Button(
-                        onClick = { inputUnitName = unit.name },
+                        onClick = { onInputUnitNameChange(unit.name) },
                         modifier = Modifier.weight(1f),
                         contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                     ) {
@@ -187,7 +240,7 @@ private fun ConverterScreen() {
                     }
                 } else {
                     OutlinedButton(
-                        onClick = { inputUnitName = unit.name },
+                        onClick = { onInputUnitNameChange(unit.name) },
                         modifier = Modifier.weight(1f),
                         contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                     ) {
@@ -200,6 +253,91 @@ private fun ConverterScreen() {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun RecentValuesSection(
+    values: List<String>,
+    onValueClick: (String) -> Unit,
+    onClear: () -> Unit,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.last_used_values),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = stringResource(R.string.tap_to_restore),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                TextButton(onClick = onClear) {
+                    Text(stringResource(R.string.clear_history))
+                }
+            }
+
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                values.forEach { value ->
+                    AssistChip(
+                        onClick = { onValueClick(value) },
+                        label = { Text(text = value) },
+                    )
+                }
+            }
+        }
+    }
+}
+
+private class RecentValuesStore(context: Context) {
+    private val preferences = context.getSharedPreferences(RECENTS_PREFS_NAME, Context.MODE_PRIVATE)
+
+    fun loadRecentValues(): List<String> =
+        preferences.getString(RECENTS_KEY, null)
+            ?.split('\n')
+            ?.map { it.trim() }
+            ?.filter { it.isNotEmpty() }
+            ?.distinct()
+            .orEmpty()
+
+    fun rememberValue(value: String): List<String> {
+        val normalized = value.trim()
+        val updatedValues = loadRecentValues()
+            .filterNot { it == normalized }
+            .toMutableList()
+            .apply {
+                add(0, normalized)
+            }
+            .take(MAX_RECENT_VALUES)
+
+        preferences.edit()
+            .putString(RECENTS_KEY, updatedValues.joinToString("\n"))
+            .apply()
+
+        return updatedValues
+    }
+
+    fun clearRecentValues(): List<String> {
+        preferences.edit()
+            .remove(RECENTS_KEY)
+            .apply()
+        return emptyList()
     }
 }
 
@@ -223,7 +361,7 @@ private fun ConversionRow(label: String, value: String) {
             )
         }
         TextButton(onClick = { clipboardManager.setText(AnnotatedString(value)) }) {
-            Text("Copy")
+            Text(stringResource(R.string.copy))
         }
     }
 }

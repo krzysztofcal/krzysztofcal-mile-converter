@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.text.KeyboardOptions
@@ -74,7 +75,7 @@ private fun MileConverterApp() {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = "Mile Converter") })
+            TopAppBar(title = { Text(text = stringResource(R.string.app_name)) })
         },
     ) { innerPadding ->
         Column(
@@ -120,7 +121,7 @@ private fun ConverterScreen() {
     ) {
         if (parsedValue == null) {
             Text(
-                text = if (isInvalidInput) "" else "Enter a valid number to see conversions.",
+                text = if (isInvalidInput) "" else stringResource(R.string.enter_valid_number),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -150,19 +151,19 @@ private fun ConverterScreen() {
                 value = inputValue,
                 onValueChange = { inputValue = it },
                 modifier = Modifier.weight(1f),
-                label = { Text("Value") },
+                label = { Text(stringResource(R.string.value_label)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 isError = isInvalidInput,
                 supportingText = if (isInvalidInput) {
-                    { Text("Invalid number") }
+                    { Text(stringResource(R.string.invalid_number)) }
                 } else {
                     null
                 },
             )
             Spacer(modifier = Modifier.width(8.dp))
             OutlinedButton(onClick = { inputValue = "" }) {
-                Text("Clear")
+                Text(stringResource(R.string.clear))
             }
         }
 
@@ -230,7 +231,7 @@ private fun ConversionRow(label: String, value: String) {
 @Composable
 private fun AboutScreen() {
     val uriHandler = LocalUriHandler.current
-    val githubUrl = "https://github.com/krzysztofcal"
+    val githubUrl = stringResource(R.string.github_url)
 
     Column(
         modifier = Modifier
@@ -239,17 +240,17 @@ private fun AboutScreen() {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "Mile Converter",
+            text = stringResource(R.string.app_about_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
         )
         Text(
-            text = "A minimal converter for miles, kilometers, and nautical miles.",
+            text = stringResource(R.string.app_about_description),
             style = MaterialTheme.typography.bodyLarge,
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "GitHub",
+            text = stringResource(R.string.github_label),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

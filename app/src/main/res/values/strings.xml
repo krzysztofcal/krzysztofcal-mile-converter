@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Mile Converter</string>
+    <string name="app_about_title">Mile Converter</string>
+    <string name="app_about_description">A simple distance conversion app for miles, kilometers, and nautical miles.</string>
+    <string name="app_store_short_description">Convert miles, kilometers, and nautical miles quickly.</string>
+    <string name="app_store_full_description">Mile Converter is a simple distance conversion app for miles, kilometers, and nautical miles.\n\nEnter a value, choose the source unit, and instantly see converted results for all supported units. The app is designed to be fast, clear, and easy to use for everyday distance conversion.\n\nFeatures:\n- Convert between miles, kilometers, and nautical miles\n- Choose any supported unit as the input unit\n- Copy converted values\n- Works fully offline\n- No account required\n- No ads\n- No tracking\n- No special permissions\n\nMile Converter performs all calculations locally on your device. It does not collect personal data, use analytics, show ads, or make network requests.</string>
+    <string name="screen_hint">Enter a value and choose the source unit.</string>
+    <string name="value_label">Value</string>
+    <string name="clear">Clear</string>
+    <string name="input_unit">Input unit</string>
+    <string name="invalid_number">Invalid number</string>
+    <string name="enter_valid_number">Enter a valid number to see conversions.</string>
+    <string name="copy">Copy</string>
+    <string name="github_label">GitHub</string>
+    <string name="github_url">https://github.com/krzysztofcal</string>
 </resources>

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -115,12 +116,31 @@ private fun ConverterScreen() {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(
-            text = "Enter a value and choose the source unit.",
-            style = MaterialTheme.typography.bodyLarge,
-        )
+        if (parsedValue == null) {
+            Text(
+                text = if (isInvalidInput) "" else "Enter a valid number to see conversions.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        } else {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    DistanceUnit.entries.forEach { unit ->
+                        ConversionRow(
+                            label = unit.displayName,
+                            value = formatDistance(conversions.getValue(unit)),
+                        )
+                    }
+                }
+            }
+        }
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -146,53 +166,34 @@ private fun ConverterScreen() {
             }
         }
 
-        Text(
-            text = "Input unit",
-            style = MaterialTheme.typography.labelLarge,
-        )
-
-        Column(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             DistanceUnit.entries.forEach { unit ->
                 val selected = unit == inputUnit
                 if (selected) {
                     Button(
                         onClick = { inputUnitName = unit.name },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.weight(1f),
+                        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                     ) {
-                        Text(text = unit.displayName)
+                        Text(
+                            text = unit.displayName,
+                            maxLines = 1,
+                            style = MaterialTheme.typography.labelSmall,
+                        )
                     }
                 } else {
                     OutlinedButton(
                         onClick = { inputUnitName = unit.name },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.weight(1f),
+                        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                     ) {
-                        Text(text = unit.displayName)
-                    }
-                }
-            }
-        }
-
-        if (parsedValue == null) {
-            Text(
-                text = if (isInvalidInput) "" else "Enter a valid number to see conversions.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        } else {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    DistanceUnit.entries.forEach { unit ->
-                        ConversionRow(
-                            label = unit.displayName,
-                            value = formatDistance(conversions.getValue(unit)),
+                        Text(
+                            text = unit.displayName,
+                            maxLines = 1,
+                            style = MaterialTheme.typography.labelSmall,
                         )
                     }
                 }

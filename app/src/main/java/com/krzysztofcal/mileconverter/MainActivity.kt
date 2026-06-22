@@ -175,8 +175,8 @@ private fun ConverterScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     DistanceUnit.entries.forEach { unit ->
                         ConversionRow(
@@ -266,8 +266,8 @@ private fun RecentValuesSection(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -276,12 +276,12 @@ private fun RecentValuesSection(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = stringResource(R.string.last_used_values),
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
                         text = stringResource(R.string.tap_to_restore),
-                        style = MaterialTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
@@ -351,12 +351,12 @@ private fun ConversionRow(label: String, value: String) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 text = value,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold,
             )
         }

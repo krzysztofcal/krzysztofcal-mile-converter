@@ -8,10 +8,13 @@
     <string name="screen_hint">Enter a value and choose the source unit.</string>
     <string name="value_label">Value</string>
     <string name="clear">Clear</string>
+    <string name="copy">Copy</string>
     <string name="input_unit">Input unit</string>
     <string name="invalid_number">Invalid number</string>
     <string name="enter_valid_number">Enter a valid number to see conversions.</string>
-    <string name="copy">Copy</string>
+    <string name="last_used_values">Last used values</string>
+    <string name="tap_to_restore">Tap to restore a recent value.</string>
+    <string name="clear_history">Clear history</string>
     <string name="github_label">GitHub</string>
     <string name="github_url">https://github.com/krzysztofcal</string>
 </resources>

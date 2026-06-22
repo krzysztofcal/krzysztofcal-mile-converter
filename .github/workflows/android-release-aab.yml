@@ -26,7 +26,16 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: Build release Android App Bundle
+      - name: Decode upload keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > upload-keystore.jks
+
+      - name: Build signed release Android App Bundle
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/upload-keystore.jks
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
         run: ./gradlew bundleRelease
 
       - name: Upload release AAB artifact

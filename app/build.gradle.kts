@@ -3,6 +3,9 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+fun String.envOrProperty(): String? =
+    providers.environmentVariable(this).orNull ?: providers.gradleProperty(this).orNull
+
 android {
     namespace = "com.krzysztofcal.mileconverter"
     compileSdk = 35
@@ -20,9 +23,25 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            val keystorePath = "KEYSTORE_FILE".envOrProperty()
+
+            if (!keystorePath.isNullOrBlank()) {
+                storeFile = file(keystorePath)
+                storePassword = "STORE_PASSWORD".envOrProperty()
+                keyAlias = "KEY_ALIAS".envOrProperty()
+                keyPassword = "KEY_PASSWORD".envOrProperty()
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            if (!"KEYSTORE_FILE".envOrProperty().isNullOrBlank()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 

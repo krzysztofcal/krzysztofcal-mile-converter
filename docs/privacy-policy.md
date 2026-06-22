@@ -1,6 +1,6 @@
-# Privacy Policy — Mile Converter
+# Privacy Policy - Mile Converter
 
-**Last updated: May 2026**
+**Last updated: June 22, 2026**
 
 ## Overview
 
@@ -8,16 +8,16 @@ Mile Converter is a free Android application that converts distances between mil
 
 ## Data Collection
 
-**Mile Converter does not collect any personal data.**
+Mile Converter does not collect any personal data.
 
 All calculations are performed locally on your device. The app does not:
 
-- Collect, store, or transmit any personal information
+- Collect, store, or transmit personal information
 - Share data with third parties
 - Sell data to advertisers or any other parties
 - Use analytics or crash-reporting services
 - Display advertisements
-- Track your location or usage behaviour
+- Track your location or usage behavior
 - Require account creation or login
 - Make network requests of any kind
 
@@ -31,13 +31,14 @@ Mile Converter does not integrate any third-party SDKs, analytics libraries, or 
 
 ## Children's Privacy
 
-Mile Converter does not knowingly collect any information from anyone, including children under the age of 13.
+Mile Converter does not knowingly collect information from children. The app does not collect information from any user.
 
-## Changes to This Policy
+## Changes To This Policy
 
 If this privacy policy changes in the future, the updated policy will be published in this repository and the effective date will be updated above.
 
 ## Contact
 
-If you have questions about this privacy policy, please open an issue in the GitHub repository:  
-[https://github.com/krzysztofcal/krzysztofcal-mile-converter](https://github.com/krzysztofcal/krzysztofcal-mile-converter)
+If you have questions about this privacy policy, open an issue in the GitHub repository:
+
+https://github.com/krzysztofcal/krzysztofcal-mile-converter

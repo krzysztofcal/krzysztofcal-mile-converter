@@ -1,78 +1,105 @@
 # Google Play Store Preparation Checklist
 
-This document outlines the steps required to publish Mile Converter on the Google Play Store.
+This document tracks the steps required to publish Mile Converter on Google Play.
 
-## About This App
+## App Summary
 
-Mile Converter performs unit conversion locally on the device. It does **not** collect data, use analytics, display ads, or require network access.
+Mile Converter performs unit conversion locally on the device. It does not collect data, use analytics, display ads, require accounts, or make network requests.
 
----
+## Current Technical Status
 
-## Checklist
+- Package name: `com.krzysztofcal.mileconverter`
+- Version: `1.0.0` / `versionCode` 1
+- Minimum SDK: 24
+- Target SDK: 35
+- Permissions: none
+- Release format: Android App Bundle (`.aab`)
 
-### Account & Developer Setup
+## Signing
 
-- [ ] Verify Google Play developer account (one-time $25 USD registration fee)
-- [ ] Accept the latest Google Play Developer Distribution Agreement
+- [ ] Create an upload keystore and keep it outside the repository:
 
-### Signing
-
-- [ ] Create an upload keystore:
+  ```bash
+  keytool -genkeypair -v -keystore upload-keystore.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000
   ```
-  keytool -genkey -v -keystore upload-keystore.jks \
-    -alias upload -keyalg RSA -keysize 2048 -validity 10000
+
+- [ ] Store the keystore file and passwords securely.
+- [ ] Add these GitHub Actions secrets:
+  - `KEYSTORE_BASE64`: base64-encoded `upload-keystore.jks`
+  - `KEY_ALIAS`: key alias, for example `upload`
+  - `KEY_PASSWORD`: key password
+  - `STORE_PASSWORD`: keystore password
+- [ ] For local signed builds, provide the same values as environment variables or Gradle properties:
+  - `KEYSTORE_FILE`
+  - `KEY_ALIAS`
+  - `KEY_PASSWORD`
+  - `STORE_PASSWORD`
+
+## Build
+
+Run tests:
+
+```bash
+./gradlew test
+```
+
+Build the release app bundle:
+
+```bash
+./gradlew bundleRelease
+```
+
+The generated bundle is written to:
+
+```text
+app/build/outputs/bundle/release/app-release.aab
+```
+
+## Play Console Setup
+
+- [ ] Create a new app in Google Play Console.
+- [ ] Choose app type: App.
+- [ ] Choose pricing: Free, unless you intentionally want a paid app.
+- [ ] Set app title: Mile Converter.
+- [ ] Enable Play App Signing.
+- [ ] Upload the signed `.aab` to an internal or closed testing track first.
+
+## Store Listing Assets
+
+- [ ] App icon: 512 x 512 PNG.
+- [ ] Feature graphic: 1024 x 500 PNG or JPG.
+- [ ] Phone screenshots: at least 2.
+- [ ] Short description, up to 80 characters:
+
+  ```text
+  Convert miles, kilometers, and nautical miles quickly.
   ```
-- [ ] Store the keystore **securely outside** the repository (never commit it)
-- [ ] Add the following secrets to the GitHub repository (Settings → Secrets → Actions):
-  - `KEYSTORE_BASE64` — base64-encoded keystore file
-  - `KEY_ALIAS` — key alias used during keystore generation
-  - `KEY_PASSWORD` — key password
-  - `STORE_PASSWORD` — keystore password
-- [ ] Configure signing in `app/build.gradle.kts` using the secrets above
-- [ ] Update the release workflow to sign the AAB before upload
 
-### Build
+- [ ] Full description, up to 4000 characters:
 
-- [ ] Build a signed release AAB:
+  ```text
+  Mile Converter is a simple distance conversion app for miles, kilometers, and nautical miles.
+
+  Choose a source unit, enter a value, and instantly see the converted results. The app runs fully on your device and does not require internet access, accounts, ads, analytics, or extra permissions.
   ```
-  ./gradlew bundleRelease
-  ```
-- [ ] Verify the AAB is signed with `jarsigner -verify`
 
-### Play Console Setup
+## Policy And Compliance
 
-- [ ] Create a new app in [Google Play Console](https://play.google.com/console)
-- [ ] Choose "App" type and "Free" pricing
-- [ ] Set the default language and app title: **Mile Converter**
+- [ ] Privacy policy: host `docs/privacy-policy.md` publicly, for example with GitHub Pages.
+- [ ] Data safety:
+  - Data collected: No.
+  - Data shared: No.
+  - Data encrypted in transit: Not applicable, because the app makes no network requests.
+  - Data deletion: Not applicable, because the app does not collect or store user data.
+- [ ] Ads declaration: No ads.
+- [ ] App access: All functionality is available without login.
+- [ ] Content rating: expected to be suitable for everyone.
+- [ ] Target audience: choose the actual intended age group. If you include children, Google may require stricter family policy compliance.
 
-### Store Listing Assets
+## Testing And Release
 
-- [ ] Prepare at least 2 screenshots per required screen size (phone)
-- [ ] Prepare a 512 × 512 px app icon (PNG, 32-bit, no alpha border)
-- [ ] Prepare a 1024 × 500 px feature graphic (JPG or PNG)
-- [ ] Write a short description (≤ 80 characters)
-- [ ] Write a full description (≤ 4000 characters)
-
-### Policy & Compliance
-
-- [ ] Fill in the **Data Safety** form:
-  - No data collected or shared
-  - No data encrypted in transit (no network calls)
-  - Users can request deletion (not applicable — no data stored)
-- [ ] Complete the **Content Rating** questionnaire (expected rating: Everyone)
-- [ ] Provide a **Privacy Policy** URL (see `docs/privacy-policy.md`; host it publicly, e.g. GitHub Pages)
-
-### Testing & Release
-
-- [ ] Upload the signed AAB to the **Internal Testing** track
-- [ ] Add internal testers and verify the app installs and functions correctly
-- [ ] Promote to **Closed Testing (Alpha)** or **Open Testing (Beta)** as needed
-- [ ] Promote to **Production** when ready
-
----
-
-## Notes
-
-- Signing is intentionally left for a separate task/PR.
-- Do not commit keystore files or plain-text credentials to the repository.
-- The app currently targets API 24+ (Android 7.0) and requires no special permissions.
+- [ ] Upload the signed `.aab` to Internal testing.
+- [ ] Install it from Google Play on a real device.
+- [ ] Verify conversion results, rotation/state restore, and the About link.
+- [ ] For new personal developer accounts, complete the required closed testing process before requesting production access.
+- [ ] Submit the production release after testing and policy forms are complete.

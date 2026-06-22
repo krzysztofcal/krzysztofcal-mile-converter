@@ -21,4 +21,18 @@ A minimal Android app built with Kotlin and Jetpack Compose for fast Google Play
 ./gradlew assembleDebug
 ```
 
+Run tests:
+
+```bash
+./gradlew test
+```
+
+Build a release Android App Bundle for Google Play:
+
+```bash
+./gradlew bundleRelease
+```
+
+Signed release builds use `KEYSTORE_FILE`, `KEY_ALIAS`, `KEY_PASSWORD`, and `STORE_PASSWORD` from environment variables or Gradle properties.
+
 Open the project in Android Studio and run the `app` configuration on a device or emulator.

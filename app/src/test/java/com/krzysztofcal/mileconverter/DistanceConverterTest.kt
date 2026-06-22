@@ -16,6 +16,6 @@ class DistanceConverterTest {
 
     @Test
     fun convertsNauticalMilesToMiles() {
-        assertEquals(0.8689762419006479, DistanceConverter.convert(1.0, DistanceUnit.NauticalMiles, DistanceUnit.Miles), 1e-12)
+        assertEquals(1.1507794480235425, DistanceConverter.convert(1.0, DistanceUnit.NauticalMiles, DistanceUnit.Miles), 1e-12)
     }
 }
